@@ -97,9 +97,9 @@ public class LineRenderer
         {
             Node nextNode = node.GetNextNode();
             float dist = node.GetDistanceToNextNode();
-            dist = Math.round(dist);
+            dist /= 1609.344f;
             Marker mark = nextNode.GetMarker();
-            mIconBitmap = mGenerator.makeIcon(Float.toString(dist) + " meters");
+            mIconBitmap = mGenerator.makeIcon(Float.toString(dist) + " miles");
             mark.setIcon(BitmapDescriptorFactory.fromBitmap(mIconBitmap));
         }
 
@@ -107,9 +107,10 @@ public class LineRenderer
         {
             Node previousNode = node.GetPreviousNode();
             float dist = previousNode.GetDistanceToNextNode();
-            dist = Math.round(dist);
+            dist /= 1609.344f;
+            dist = Math.signum(dist);
             Marker mark = node.GetMarker();
-            mIconBitmap = mGenerator.makeIcon(Float.toString(dist) + " meters");
+            mIconBitmap = mGenerator.makeIcon(Float.toString(dist) + " miles");
             mark.setIcon(BitmapDescriptorFactory.fromBitmap(mIconBitmap));
         }
 

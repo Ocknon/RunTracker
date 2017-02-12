@@ -113,8 +113,9 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
         {
             Node previousNode = _nodeList.get(_nodeList.size() - 1);
             float dist = previousNode.GetDistanceToNextNode(point);
+            dist /= 1609.344;
             dist = Math.round(dist);
-            mIconBitmap = mGenerator.makeIcon(Float.toString(dist) + " meters");
+            mIconBitmap = mGenerator.makeIcon(Float.toString(dist) + " miles");
         }
 
         Marker mark = mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(mIconBitmap)).position(point));
