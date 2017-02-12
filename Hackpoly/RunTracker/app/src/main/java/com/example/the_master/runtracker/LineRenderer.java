@@ -84,4 +84,9 @@ public class LineRenderer
             trailingNodeLine.createPolyline(_map);
         }
     }
+
+    public void reset(){
+        mPolyNodes = new ArrayList<>();
+        _startNode = null;
+    }
 }

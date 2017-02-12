@@ -8,6 +8,10 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.Manifest;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.Spinner;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,8 +27,10 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.the_master.runtracker.R.id.map;
 
-public class MapsFactory extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleMap.OnMarkerDragListener {
+
+public class MapsFactory extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener, ActivityCompat.OnRequestPermissionsResultCallback, AdapterView.OnItemSelectedListener, GoogleMap.OnMarkerDragListener {
 
     private LineRenderer mLineRenderer;
     private float mTotalDistance = 0f;
@@ -46,8 +52,9 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
         mLocationFactory = new LocationFactory(this);
         setContentView(R.layout.fragment);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(map);
         mapFragment.getMapAsync(this);
+        setUpButtons();
 
     }
 
@@ -112,7 +119,6 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onMarkerDrag (Marker mark)
     {
-        Log.d("Debug", "Moving marker");
         Node node = mNodeDict.get(mark.hashCode());
         //node.SetLatLng(mark.getPosition());
         mLineRenderer.movePolyNode(node);
@@ -123,6 +129,8 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
     {
 
     }
+
+
 
     private void _PlaceNode(Marker mark)
     {
@@ -142,5 +150,43 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
             mLineRenderer.createPolyNode(node);
         }
 
+    }
+
+    public void clearMapData(){
+        mMap.clear();
+        mTotalDistance = 0;
+        mNodeDict = new Hashtable<Integer, Node>();
+        _nodeList = new ArrayList<Node>();
+        LatLng currentPos =  new LatLng(mLocationFactory.mLastLocation.getLatitude(),mLocationFactory.mLastLocation.getLongitude());
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 20));
+        onMapClick(currentPos);
+        mLineRenderer.reset();
+        mLineRenderer.AddStartNode(_nodeList.get(0));
+        Log.d(TAG, "Calering data");
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id){
+        pos++;
+        mMap.setMapType(pos);
+        Log.d(TAG, "Chose selection");
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent){
+
+    }
+
+    public void setUpButtons(){
+        final Button button = (Button) findViewById(R.id.clear);
+        final Spinner spinner = (Spinner) findViewById(R.id.map_selection);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearMapData();
+            }
+        });
+        spinner.setOnItemSelectedListener(this);
     }
 }
