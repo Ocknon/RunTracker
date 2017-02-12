@@ -114,7 +114,7 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
     {
         Log.d("Debug", "Moving marker");
         Node node = mNodeDict.get(mark.hashCode());
-        node.SetLatLng(mark.getPosition());
+        //node.SetLatLng(mark.getPosition());
         mLineRenderer.movePolyNode(node);
     }
 
@@ -127,7 +127,7 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
     private void _PlaceNode(Marker mark)
     {
         Node node = new Node();
-        node.SetLatLng(mark.getPosition());
+        node.SetMarker(mark);
         mNodeDict.put(mark.hashCode(), node);
         _nodeList.add(node);
         if (_nodeList.size() > 1)

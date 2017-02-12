@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.geometry.Point;
 
 import org.json.JSONObject;
@@ -17,13 +18,16 @@ public class Node
 {
     private  Node _previousNode = null;
     private  Node _nextNode = null;
-    private LatLng _point = null;
+    private Marker mMarker = null;
 
     public Node GetPreviousNode () { return _previousNode; }
     public void SetPreviousNode (Node node)
     {
         _previousNode = node;
     }
+
+    public Marker GetMarker(){ return  mMarker; }
+    public void SetMarker(Marker value){ mMarker = value;}
 
     public Node GetNextNode ()
     {
@@ -36,17 +40,17 @@ public class Node
 
     public LatLng GetLatLng()
     {
-        return _point;
+        return mMarker.getPosition();
     }
     public void SetLatLng(LatLng point)
     {
-        _point = point;
+        mMarker.setPosition(point);
     }
 
     public float GetDistanceToNextNode()
     {
         float[] distance = new float[1];
-        Location.distanceBetween(_point.latitude, _point.longitude,
+        Location.distanceBetween(GetLatLng().latitude, GetLatLng().longitude,
                                 _nextNode.GetLatLng().latitude, _nextNode.GetLatLng().longitude, distance);
         return distance[0];
     }
