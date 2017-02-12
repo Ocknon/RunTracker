@@ -25,6 +25,7 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener{
 
     private GoogleMap mMap;
+    private LineRenderer _line;
 
     private List<Node> _nodeList = new ArrayList<Node>();
 
@@ -45,6 +46,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng sydney = new LatLng(-34, 151);
         Marker mark = mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         _PlaceNode(mark);
+        _line = new LineRenderer(mMap);
+        _line.AddStartNode(_nodeList.get(0));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         mMap.setOnMapClickListener(this);
     }
@@ -68,7 +71,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             node.SetPreviousNode(previousNode);
             previousNode.SetNextNode(node);
             float distance = previousNode.GetDistanceToNextNode();
-            Log.d(Float.toString(distance), " Total Distance");
+            _line.DrawLine(node);
         }
 
     }
