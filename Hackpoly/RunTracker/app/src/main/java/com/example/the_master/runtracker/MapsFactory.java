@@ -35,10 +35,7 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
 
     private List<Node> _nodeList = new ArrayList<Node>();
 
-<<<<<<< HEAD
-=======
     private boolean mLocationSet = false;
->>>>>>> 3732df23d27386b94f4c6a69e3fc71c20eaf6f73
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -73,7 +70,6 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.d(TAG, "Map Ready");
         mMap = googleMap;
 
         mLineRenderer = new LineRenderer(mMap);
@@ -118,7 +114,7 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
         Log.d("Debug", "Moving marker");
         Node node = mNodeDict.get(mark.hashCode());
         node.SetLatLng(mark.getPosition());
-        mLineRenderer.UpdateLine(node);
+        mLineRenderer.movePolyNode(node);
     }
 
     @Override
@@ -139,7 +135,7 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
             node.SetPreviousNode(previousNode);
             previousNode.SetNextNode(node);
             float distance = previousNode.GetDistanceToNextNode();
-            mLineRenderer.DrawLine(node);
+            mLineRenderer.createPolyNode(node);
         }
 
     }
