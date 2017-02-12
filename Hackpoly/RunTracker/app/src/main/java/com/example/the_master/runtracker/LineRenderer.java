@@ -115,4 +115,9 @@ public class LineRenderer
         }
 
     }
+
+    public void reset(){
+        mPolyNodes = new ArrayList<>();
+        _startNode = null;
+    }
 }
