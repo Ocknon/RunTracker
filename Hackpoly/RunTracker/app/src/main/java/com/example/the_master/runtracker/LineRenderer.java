@@ -1,15 +1,15 @@
 package com.example.the_master.runtracker;
 
 import android.graphics.Color;
-import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.maps.model.internal.IPolylineDelegate;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -21,40 +21,67 @@ public class LineRenderer
     private GoogleMap _map;
 
     private Node _startNode = null;
-    private Node _endNode = null;
 
-    private Polyline _line;
-
-    private List<LatLng> _latLngList = new ArrayList<LatLng>();
+    private List<PolyNode> mPolyNodes = new ArrayList<>();
 
     LineRenderer(GoogleMap map)
     {
         _map = map;
     }
 
+    public PolyNode[] getLinesFromNode(Node a)
+    {
+        PolyNode[] returnArray = new PolyNode[2];
+        int j = 0;
+        for(Iterator<PolyNode> i = mPolyNodes.iterator(); i.hasNext(); ){
+            PolyNode temp = i.next();
+            if(temp.contains(a)){
+                returnArray[j++] = temp;
+            }
+            if(j > 2){
+                return returnArray;
+            }
+        }
+        return returnArray;
+    }
+
+    public PolyNode getLineFromNodes(Node a, Node b)
+    {
+        for(Iterator<PolyNode> i = mPolyNodes.iterator(); i.hasNext(); ){
+            PolyNode temp = i.next();
+            if(temp.isExactLine(a, b)){
+                return temp;
+            }
+        }
+        return  null;
+    }
+
     public void AddStartNode(Node startNode)
     {
         _startNode = startNode;
-        _latLngList.add(startNode.GetLatLng());
     }
 
-    public void DrawLine(Node node)
+    public void createPolyNode(Node node)
     {
-        _latLngList.add(node.GetLatLng());
-        if (_latLngList.size() > 1)
-        {
-            _line = _map.addPolyline(new PolylineOptions()
-                    .add(_latLngList.get(_latLngList.size() - 2), node.GetLatLng())
-                    .width(2)
-                    .color(Color.RED));
+        if(mPolyNodes.size() == 0){
+            mPolyNodes.add(PolyNode.create(_startNode, node,_map));
+        } else{
+            mPolyNodes.add(PolyNode.create(node.GetPreviousNode(), node, _map));
         }
     }
 
-    public void UpdateLine(Node node)
+    public void movePolyNode(Node node)
     {
-        _line = _map.addPolyline(new PolylineOptions()
-                .add(node.GetPreviousNode().GetLatLng(), node.GetLatLng())
-                .width(2)
-                .color(Color.RED));
+        PolyNode leadingNodeLine = getLineFromNodes(node.GetPreviousNode(), node);
+        PolyNode trailingNodeLine = getLineFromNodes(node, node.GetNextNode());
+
+        if(leadingNodeLine != null){
+            leadingNodeLine.clearPolyline();
+            leadingNodeLine.createPolyline(_map);
+        }
+        if(trailingNodeLine != null){
+            trailingNodeLine.clearPolyline();
+            trailingNodeLine.createPolyline(_map);
+        }
     }
 }
