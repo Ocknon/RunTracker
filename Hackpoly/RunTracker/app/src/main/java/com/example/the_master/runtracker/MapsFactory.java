@@ -18,19 +18,23 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 
-public class MapsFactory extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
+public class MapsFactory extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleMap.OnMarkerDragListener {
 
     private LineRenderer mLineRenderer;
 
     private static final String TAG = "Debug";
-
+    private Map<Integer, Node> mNodeDict = new Hashtable<Integer, Node>();
     private GoogleMap mMap;
     private LocationFactory mLocationFactory;
 
     private List<Node> _nodeList = new ArrayList<Node>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -86,6 +90,7 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
         mLineRenderer.AddStartNode(_nodeList.get(0));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         mMap.setOnMapClickListener(this);
+        mMap.setOnMarkerDragListener(this);
     }
 
     public void updateCurrentLocation(Location data)
@@ -106,14 +111,36 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
     public void onMapClick(LatLng point)
     {
         Marker mark = mMap.addMarker(new MarkerOptions().position(point).title("we did it boyz"));
+        mark.setDraggable(true);
         _PlaceNode(mark);
+    }
+
+    @Override
+    public void onMarkerDragStart (Marker mark)
+    {
+
+    }
+
+    @Override
+    public void onMarkerDrag (Marker mark)
+    {
+        Log.d("Debug", "Moving marker");
+        Node node = mNodeDict.get(mark.hashCode());
+        node.SetLatLng(mark.getPosition());
+        mLineRenderer.UpdateLine(node);
+    }
+
+    @Override
+    public void onMarkerDragEnd (Marker mark)
+    {
+
     }
 
     private void _PlaceNode(Marker mark)
     {
         Node node = new Node();
         node.SetLatLng(mark.getPosition());
-
+        mNodeDict.put(mark.hashCode(), node);
         _nodeList.add(node);
         if (_nodeList.size() > 1)
         {

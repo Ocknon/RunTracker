@@ -49,4 +49,12 @@ public class LineRenderer
                     .color(Color.RED));
         }
     }
+
+    public void UpdateLine(Node node)
+    {
+        _line = _map.addPolyline(new PolylineOptions()
+                .add(node.GetPreviousNode().GetLatLng(), node.GetLatLng())
+                .width(2)
+                .color(Color.RED));
+    }
 }

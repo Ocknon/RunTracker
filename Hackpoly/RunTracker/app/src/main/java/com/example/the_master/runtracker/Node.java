@@ -19,10 +19,7 @@ public class Node
     private  Node _nextNode = null;
     private LatLng _point = null;
 
-    public Node GetPreviousNode (Node currentNode)
-    {
-        return currentNode._previousNode;
-    }
+    public Node GetPreviousNode () { return _previousNode; }
     public void SetPreviousNode (Node node)
     {
         _previousNode = node;
