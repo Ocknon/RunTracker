@@ -1,11 +1,16 @@
 package com.example.the_master.runtracker;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Icon;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.ui.IconGenerator;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -24,8 +29,12 @@ public class LineRenderer
 
     private List<PolyNode> mPolyNodes = new ArrayList<>();
 
-    LineRenderer(GoogleMap map)
+    private IconGenerator mGenerator;
+    private Bitmap mIconBitmap;
+
+    LineRenderer(GoogleMap map, IconGenerator generator)
     {
+        mGenerator = generator;
         _map = map;
     }
 
@@ -83,6 +92,27 @@ public class LineRenderer
             trailingNodeLine.clearPolyline();
             trailingNodeLine.createPolyline(_map);
         }
+
+        if (node.GetNextNode() != null)
+        {
+            Node nextNode = node.GetNextNode();
+            float dist = node.GetDistanceToNextNode();
+            dist = Math.round(dist);
+            Marker mark = nextNode.GetMarker();
+            mIconBitmap = mGenerator.makeIcon(Float.toString(dist) + " meters");
+            mark.setIcon(BitmapDescriptorFactory.fromBitmap(mIconBitmap));
+        }
+
+        if (node.GetPreviousNode() != null)
+        {
+            Node previousNode = node.GetPreviousNode();
+            float dist = previousNode.GetDistanceToNextNode();
+            dist = Math.round(dist);
+            Marker mark = node.GetMarker();
+            mIconBitmap = mGenerator.makeIcon(Float.toString(dist) + " meters");
+            mark.setIcon(BitmapDescriptorFactory.fromBitmap(mIconBitmap));
+        }
+
     }
 
     public void reset(){

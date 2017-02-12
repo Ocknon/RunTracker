@@ -54,4 +54,11 @@ public class Node
                                 _nextNode.GetLatLng().latitude, _nextNode.GetLatLng().longitude, distance);
         return distance[0];
     }
+    public float GetDistanceToNextNode(LatLng point)
+    {
+        float[] distance = new float[1];
+        Location.distanceBetween(GetLatLng().latitude, GetLatLng().longitude,
+                                point.latitude, point.longitude, distance);
+        return distance[0];
+    }
 }

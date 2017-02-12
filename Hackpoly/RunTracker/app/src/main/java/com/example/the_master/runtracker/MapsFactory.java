@@ -1,6 +1,7 @@
 package com.example.the_master.runtracker;
 
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -8,10 +9,15 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.Manifest;
 import android.util.Log;
+<<<<<<< HEAD
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
+=======
+import android.widget.ImageButton;
+import android.widget.ImageView;
+>>>>>>> e377fc90ac1183d8c655ef80186da09fba57901c
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,6 +26,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.maps.android.ui.IconGenerator;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,6 +42,8 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
 
     private LineRenderer mLineRenderer;
     private float mTotalDistance = 0f;
+    public IconGenerator mGenerator;
+    private Bitmap mIconBitmap;
 
     private static final String TAG = "Debug";
     private Map<Integer, Node> mNodeDict = new Hashtable<Integer, Node>();
@@ -56,6 +66,9 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
         mapFragment.getMapAsync(this);
         setUpButtons();
 
+        mGenerator = new IconGenerator(this);
+        mGenerator.setStyle(IconGenerator.STYLE_GREEN);
+        mIconBitmap = mGenerator.makeIcon("START");
     }
 
     @Override
@@ -80,7 +93,7 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mLineRenderer = new LineRenderer(mMap);
+        mLineRenderer = new LineRenderer(mMap, mGenerator);
         mMap.setOnMapClickListener(this);
         mMap.setOnMarkerDragListener(this);
     }
@@ -105,7 +118,17 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
     public void onMapClick(LatLng point)
     {
         if(!mLocationSet){return;}
-        Marker mark = mMap.addMarker(new MarkerOptions().position(point));
+
+        if (_nodeList.size() > 0)
+        {
+            Node previousNode = _nodeList.get(_nodeList.size() - 1);
+            float dist = previousNode.GetDistanceToNextNode(point);
+            dist = Math.round(dist);
+            mIconBitmap = mGenerator.makeIcon(Float.toString(dist) + " meters");
+        }
+
+        Marker mark = mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(mIconBitmap)).position(point));
+
         mark.setDraggable(true);
         _PlaceNode(mark);
     }
@@ -120,7 +143,6 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
     public void onMarkerDrag (Marker mark)
     {
         Node node = mNodeDict.get(mark.hashCode());
-        //node.SetLatLng(mark.getPosition());
         mLineRenderer.movePolyNode(node);
     }
 
@@ -145,8 +167,6 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
             previousNode.SetNextNode(node);
             float distance = previousNode.GetDistanceToNextNode();
             mTotalDistance += distance;
-            mark.setTitle(Float.toString(distance) + "meters");
-            mark.showInfoWindow();
             mLineRenderer.createPolyNode(node);
         }
 
