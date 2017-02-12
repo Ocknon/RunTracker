@@ -26,6 +26,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.maps.android.ui.IconGenerator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -121,8 +124,11 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
             Node previousNode = _nodeList.get(_nodeList.size() - 1);
             float dist = previousNode.GetDistanceToNextNode(point);
             dist /= 1609.344;
-            dist = Math.round(dist);
-            mIconBitmap = mGenerator.makeIcon(Float.toString(dist) + " miles");
+            BigDecimal bd = new BigDecimal(dist);
+            DecimalFormat df = new DecimalFormat("#.###");
+            df.setRoundingMode(RoundingMode.CEILING);
+
+            mIconBitmap = mGenerator.makeIcon(df.format(bd).toString() + " miles");
         }
 
         Marker mark = mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(mIconBitmap)).position(point));

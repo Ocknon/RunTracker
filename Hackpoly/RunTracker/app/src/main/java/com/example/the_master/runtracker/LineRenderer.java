@@ -12,6 +12,9 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.ui.IconGenerator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -97,9 +100,12 @@ public class LineRenderer
         {
             Node nextNode = node.GetNextNode();
             float dist = node.GetDistanceToNextNode();
-            dist /= 1609.344f;
+            dist /= 1609.344;
+            BigDecimal bd = new BigDecimal(dist);
+            DecimalFormat df = new DecimalFormat("#.###");
+            df.setRoundingMode(RoundingMode.CEILING);
             Marker mark = nextNode.GetMarker();
-            mIconBitmap = mGenerator.makeIcon(Float.toString(dist) + " miles");
+            mIconBitmap = mGenerator.makeIcon(df.format(bd).toString() + " miles");
             mark.setIcon(BitmapDescriptorFactory.fromBitmap(mIconBitmap));
         }
 
@@ -107,10 +113,12 @@ public class LineRenderer
         {
             Node previousNode = node.GetPreviousNode();
             float dist = previousNode.GetDistanceToNextNode();
-            dist /= 1609.344f;
-            dist = Math.signum(dist);
+            dist /= 1609.344;
+            BigDecimal bd = new BigDecimal(dist);
+            DecimalFormat df = new DecimalFormat("#.###");
+            df.setRoundingMode(RoundingMode.CEILING);
             Marker mark = node.GetMarker();
-            mIconBitmap = mGenerator.makeIcon(Float.toString(dist) + " miles");
+            mIconBitmap = mGenerator.makeIcon(df.format(bd).toString() + " miles");
             mark.setIcon(BitmapDescriptorFactory.fromBitmap(mIconBitmap));
         }
 
