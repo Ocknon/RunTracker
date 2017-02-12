@@ -32,6 +32,8 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
 
     private List<Node> _nodeList = new ArrayList<Node>();
 
+    private boolean mLocationSet = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -68,36 +70,22 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
         Log.d(TAG, "Map Ready");
         mMap = googleMap;
 
-        LatLng currentPos;
-        if(mLocationFactory.mLastLocation != null)
-        {
-            currentPos =  new LatLng(mLocationFactory.mLastLocation.getLatitude(),mLocationFactory.mLastLocation.getLongitude());
-        }else
-        {
-            currentPos = new LatLng(-34, 151);
-        }
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
-        // Add a marker in Sydney, Australia, and move the camera.
-        LatLng sydney = new LatLng(-34, 151);
-        Marker mark = mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        _PlaceNode(mark);
         mLineRenderer = new LineRenderer(mMap);
-        mLineRenderer.AddStartNode(_nodeList.get(0));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         mMap.setOnMapClickListener(this);
     }
 
     public void updateCurrentLocation(Location data)
     {
-        Log.d(TAG, " Location Callback");
         if(data != null)
         {
-            Log.d(TAG, "Setting Location");
-            LatLng currentPos =  new LatLng(mLocationFactory.mLastLocation.getLatitude(),mLocationFactory.mLastLocation.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
-            onMapClick(currentPos);
-
+            if(!mLocationSet)
+            {
+                mLocationSet = true;
+                LatLng currentPos =  new LatLng(mLocationFactory.mLastLocation.getLatitude(),mLocationFactory.mLastLocation.getLongitude());
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 20));
+                onMapClick(currentPos);
+                mLineRenderer.AddStartNode(_nodeList.get(0));
+            }
         }
 
     }
@@ -105,6 +93,7 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onMapClick(LatLng point)
     {
+        if(!mLocationSet){return;}
         Marker mark = mMap.addMarker(new MarkerOptions().position(point).title("we did it boyz"));
         _PlaceNode(mark);
     }
