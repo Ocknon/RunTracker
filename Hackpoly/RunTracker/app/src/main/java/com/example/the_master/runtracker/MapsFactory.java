@@ -27,6 +27,7 @@ import java.util.Map;
 public class MapsFactory extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener, ActivityCompat.OnRequestPermissionsResultCallback, GoogleMap.OnMarkerDragListener {
 
     private LineRenderer mLineRenderer;
+    private float mTotalDistance = 0f;
 
     private static final String TAG = "Debug";
     private Map<Integer, Node> mNodeDict = new Hashtable<Integer, Node>();
@@ -35,10 +36,7 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
 
     private List<Node> _nodeList = new ArrayList<Node>();
 
-<<<<<<< HEAD
-=======
     private boolean mLocationSet = false;
->>>>>>> 3732df23d27386b94f4c6a69e3fc71c20eaf6f73
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -101,7 +99,7 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
     public void onMapClick(LatLng point)
     {
         if(!mLocationSet){return;}
-        Marker mark = mMap.addMarker(new MarkerOptions().position(point).title("we did it boyz"));
+        Marker mark = mMap.addMarker(new MarkerOptions().position(point));
         mark.setDraggable(true);
         _PlaceNode(mark);
     }
@@ -139,6 +137,9 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
             node.SetPreviousNode(previousNode);
             previousNode.SetNextNode(node);
             float distance = previousNode.GetDistanceToNextNode();
+            mTotalDistance += distance;
+            mark.setTitle(Float.toString(distance) + "meters");
+            mark.showInfoWindow();
             mLineRenderer.DrawLine(node);
         }
 
