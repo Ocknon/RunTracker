@@ -11,6 +11,7 @@ import android.Manifest;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.ImageButton;
@@ -197,6 +198,10 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
     public void setUpButtons(){
         final Button button = (Button) findViewById(R.id.clear);
         final Spinner spinner = (Spinner) findViewById(R.id.map_selection);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.map_types_a, android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
