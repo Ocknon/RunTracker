@@ -1,11 +1,8 @@
 package com.example.the_master.runtracker;
 
-import android.*;
 import android.Manifest;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -29,16 +26,16 @@ public class LocationFactory implements GoogleApiClient.ConnectionCallbacks, Goo
     public boolean locationPermissionGranted = false;
 
     LocationRequest mLocationRequest;
-    MapsActivity mMapsActivity;
+    MapsFactory mMapsFactory;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     private boolean mSendingLocationRequests;
 
 
-    public LocationFactory(MapsActivity mapsActivity) {
-        mMapsActivity = mapsActivity;
-        locationPermissionGranted = mMapsActivity.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION);
-        mGoogleApiClient = new GoogleApiClient.Builder(mapsActivity)
+    public LocationFactory(MapsFactory mapsFactory) {
+        mMapsFactory = mapsFactory;
+        locationPermissionGranted = PermissionsUtil.checkPermission(mMapsFactory, Manifest.permission.ACCESS_FINE_LOCATION);
+        mGoogleApiClient = new GoogleApiClient.Builder(mMapsFactory)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -56,7 +53,7 @@ public class LocationFactory implements GoogleApiClient.ConnectionCallbacks, Goo
         if(!mSendingLocationRequests && locationPermissionGranted) {
             startLocationRequests();
         }
-        //mMapsActivity.updateCurrentLocation(mLastLocation);
+        //mMapsFactory.updateCurrentLocation(mLastLocation);
         Log.d(TAG, "Play services connection Succeeded");
     }
 
@@ -86,7 +83,7 @@ public class LocationFactory implements GoogleApiClient.ConnectionCallbacks, Goo
     public void onLocationChanged(Location location)
     {
         mLastLocation = location;
-        mMapsActivity.updateCurrentLocation(mLastLocation);
+        mMapsFactory.updateCurrentLocation(mLastLocation);
         Log.d(TAG, "Updating Location");
     }
 

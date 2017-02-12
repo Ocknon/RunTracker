@@ -14,20 +14,29 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
-    private static final String TAG = "Location";
-    private static final byte PERMISSION_ACCESS_FINE_LOCATION = 1;
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class MapsFactory extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
+
+    private LineRenderer mLineRenderer;
+
+    private static final String TAG = "Debug";
+
     private GoogleMap mMap;
     private LocationFactory mLocationFactory;
+
+    private List<Node> _nodeList = new ArrayList<Node>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-
         super.onCreate(savedInstanceState);
-        requestPermission(Manifest.permission.ACCESS_FINE_LOCATION, PERMISSION_ACCESS_FINE_LOCATION);
+        PermissionsUtil.requestPermission(this,Manifest.permission.ACCESS_FINE_LOCATION, PermissionsUtil.PERMISSION_ACCESS_FINE_LOCATION);
         mLocationFactory = new LocationFactory(this);
         setContentView(R.layout.fragment);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -36,33 +45,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public boolean checkPermission(String permission)
-    {
-        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    public void requestPermission(String permission, int id)
-    {
-        if(!checkPermission(permission))
-        {
-            ActivityCompat.requestPermissions(this,new String[]{permission},id);
-        }
-
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case PERMISSION_ACCESS_FINE_LOCATION: {
+            case PermissionsUtil.PERMISSION_ACCESS_FINE_LOCATION: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     mLocationFactory.locationPermissionGranted = true;
                     mLocationFactory.startLocationRequests();
-
                 } else {
 
                 }
-                return;
             }
 
             // other 'case' lines to check for other
@@ -85,6 +78,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
+        // Add a marker in Sydney, Australia, and move the camera.
+        LatLng sydney = new LatLng(-34, 151);
+        Marker mark = mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        _PlaceNode(mark);
+        mLineRenderer = new LineRenderer(mMap);
+        mLineRenderer.AddStartNode(_nodeList.get(0));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         mMap.setOnMapClickListener(this);
     }
 
@@ -105,7 +105,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapClick(LatLng point)
     {
-        mMap.addMarker(new MarkerOptions().position(point).title("we did it boyz"));
+        Marker mark = mMap.addMarker(new MarkerOptions().position(point).title("we did it boyz"));
+        _PlaceNode(mark);
+    }
+
+    private void _PlaceNode(Marker mark)
+    {
+        Node node = new Node();
+        node.SetLatLng(mark.getPosition());
+
+        _nodeList.add(node);
+        if (_nodeList.size() > 1)
+        {
+            Node previousNode = _nodeList.get(_nodeList.size()-2);
+            node.SetPreviousNode(previousNode);
+            previousNode.SetNextNode(node);
+            float distance = previousNode.GetDistanceToNextNode();
+            mLineRenderer.DrawLine(node);
+        }
 
     }
 }
