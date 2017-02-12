@@ -136,14 +136,10 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
             node.SetPreviousNode(previousNode);
             previousNode.SetNextNode(node);
             float distance = previousNode.GetDistanceToNextNode();
-<<<<<<< HEAD
             mTotalDistance += distance;
             mark.setTitle(Float.toString(distance) + "meters");
             mark.showInfoWindow();
-            mLineRenderer.DrawLine(node);
-=======
             mLineRenderer.createPolyNode(node);
->>>>>>> 5f4c78092fa0a74219f4b9de284671b89e67860d
         }
 
     }
