@@ -9,15 +9,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.Manifest;
 import android.util.Log;
-<<<<<<< HEAD
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
-=======
 import android.widget.ImageButton;
 import android.widget.ImageView;
->>>>>>> e377fc90ac1183d8c655ef80186da09fba57901c
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -177,12 +174,12 @@ public class MapsFactory extends FragmentActivity implements OnMapReadyCallback,
         mTotalDistance = 0;
         mNodeDict = new Hashtable<Integer, Node>();
         _nodeList = new ArrayList<Node>();
+        mIconBitmap = mGenerator.makeIcon("START");
         LatLng currentPos =  new LatLng(mLocationFactory.mLastLocation.getLatitude(),mLocationFactory.mLastLocation.getLongitude());
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 20));
         onMapClick(currentPos);
         mLineRenderer.reset();
         mLineRenderer.AddStartNode(_nodeList.get(0));
-        Log.d(TAG, "Calering data");
     }
 
     @Override
