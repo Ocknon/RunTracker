@@ -2,6 +2,7 @@ package com.example.the_master.runtracker;
 
 import android.location.Location;
 import android.os.Parcel;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.geometry.Point;
@@ -27,9 +28,9 @@ public class Node
         _previousNode = node;
     }
 
-    public Node GetNextNode (Node currentNode)
+    public Node GetNextNode ()
     {
-        return currentNode._nextNode;
+        return _nextNode;
     }
     public void SetNextNode (Node node)
     {
@@ -45,11 +46,11 @@ public class Node
         _point = point;
     }
 
-    public float GetDistanceToNextNode(Node currentNode)
+    public float GetDistanceToNextNode()
     {
         float[] distance = new float[1];
-        Location.distanceBetween(currentNode.GetLatLng().latitude, currentNode.GetLatLng().longitude,
-                                currentNode.GetNextNode(currentNode).GetLatLng().latitude, currentNode.GetNextNode(currentNode).GetLatLng().longitude, distance);
+        Location.distanceBetween(_point.latitude, _point.longitude,
+                                _nextNode.GetLatLng().latitude, _nextNode.GetLatLng().longitude, distance);
         return distance[0];
     }
 }

@@ -1,17 +1,32 @@
 package com.example.the_master.runtracker;
 
 import android.os.Bundle;
+import android.support.annotation.FloatRange;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.util.LogWriter;
+import android.util.Log;
+import android.webkit.ConsoleMessage;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.io.Console;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener{
 
     private GoogleMap mMap;
+
+    private List<Node> _nodeList = new ArrayList<Node>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +43,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Add a marker in Sydney, Australia, and move the camera.
         LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        Marker mark = mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        _PlaceNode(mark);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         mMap.setOnMapClickListener(this);
     }
@@ -36,7 +52,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapClick(LatLng point)
     {
-        mMap.addMarker(new MarkerOptions().position(point).title("we did it boyz"));
+        Marker mark = mMap.addMarker(new MarkerOptions().position(point).title("we did it boyz"));
+        _PlaceNode(mark);
+    }
+
+    private void _PlaceNode(Marker mark)
+    {
+        Node node = new Node();
+        node.SetLatLng(mark.getPosition());
+
+        _nodeList.add(node);
+        if (_nodeList.size() > 1)
+        {
+            Node previousNode = _nodeList.get(_nodeList.size()-2);
+            node.SetPreviousNode(previousNode);
+            previousNode.SetNextNode(node);
+            float distance = previousNode.GetDistanceToNextNode();
+            Log.d(Float.toString(distance), " Total Distance");
+        }
 
     }
 }
